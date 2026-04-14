@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mdc
+      POSTGRES_PASSWORD: mdc_secret
+      POSTGRES_DB: mdc_admin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mdc -d mdc_admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  equipment-service:
+    build: ./services/equipment
+    environment:
+      DATABASE_URL: postgresql+psycopg2://equipment_user:equipment_secret@postgres:5432/equipment
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  metrics-service:
+    build: ./services/metrics
+    environment:
+      DATABASE_URL: postgresql+psycopg2://metrics_user:metrics_secret@postgres:5432/metrics
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    expose:
+      - "80"
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - equipment-service
+      - metrics-service
+      - frontend
+
+volumes:
+  pgdata:
