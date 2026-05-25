@@ -7,7 +7,7 @@
 1. **Клонировать репозиторий**
 
    ```bash
-   git clone https://github.com/<ваш-логин>/mdc-final-qualifying-work.git
+   git clone https://github.com/NikitaZhukovskiy/mdc-final-qualifying-work.git
    cd mdc-final-qualifying-work
    ```
 
@@ -48,6 +48,3 @@
 | `gateway`         | Единая точка входа, маршрутизация `/api` |
 
 
-## Примечание
-
-Логины по умолчанию для входа в приложение задаются на стороне клиента (см. модуль авторизации во фронтенде). Для продакшена замените секреты БД и ограничьте доступ к портам.
